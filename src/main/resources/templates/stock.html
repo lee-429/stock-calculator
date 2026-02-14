@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" name="theme-color" content="#4e73df">
+  <title>Stock Calculator</title>
+  <link rel="manifest" href="/manifest.json">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #4e73df, #1cc88a);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* 카드 등장 애니메이션 */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      width: 350px;
+      text-align: center;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background-color: #4e73df;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2e59d9;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .result {
+      margin-top: 20px;
+      text-align: left;
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    .positive {
+      color: #1cc88a;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+
+    .negative {
+      color: #e74a3b;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+
+    /* 숫자 팝 애니메이션 */
+    .animated-number {
+      display: inline-block;
+      animation: pop 0.4s ease;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <h2>📈 주식 수익 계산기</h2>
+
+  <form action="/stock" method="post">
+    <div class="input-group">
+      현재가
+      <input type="number" name="currentPrice" required>
+    </div>
+
+    <div class="input-group">
+      평균가
+      <input type="number" name="averagePrice" required>
+    </div>
+
+    <div class="input-group">
+      보유주
+      <input type="number" name="holdingShares" required>
+    </div>
+
+    <button type="submit">계산하기</button>
+  </form>
+
+  <div class="result" th:if="${profit != null}">
+
+    <p>
+      수익:
+      <span class="animated-number"
+            th:classappend="${isProfit} ? ' positive' : ' negative'"
+            th:text="${#numbers.formatInteger(profit, 3, 'COMMA')}">
+      </span> 원
+    </p>
+
+    <p>
+      수익률:
+      <span th:classappend="${isProfit} ? 'positive' : 'negative'">
+        <span th:text="${isProfit} ? '▲ ' : '▼ '"></span>
+        <span class="animated-number"
+              th:text="${#numbers.formatDecimal(rate, 1, 1)}"></span> %
+      </span>
+    </p>
+
+    <p>
+      총 금액:
+      <span class="animated-number"
+            th:text="${#numbers.formatInteger(total, 3, 'COMMA')}"></span> 원
+    </p>
+
+  </div>
+
+</div>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+    .then(() => console.log("Service Worker 등록 완료"));
+  }
+</script>
+
+</body>
+</html>
